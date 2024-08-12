@@ -47,7 +47,7 @@ async def toss(ctx):
 
 
 @bot.command(name = 'chat')
-async def chat(ctx,message):
+async def chat(ctx,*,message):
     url = 'https://loligod-bot.onrender.com/geminichat'
     data = {'prompt': message}
 
@@ -56,7 +56,7 @@ async def chat(ctx,message):
 
     # Check the response
     if response.status_code == 200:
-        print("Response from API:", response.json())
+        # print("Response from API:", response.json())
         await ctx.reply(response.json())
     else:
         print("Failed to get a valid response. Status code:", response.status_code)
