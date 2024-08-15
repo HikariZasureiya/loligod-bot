@@ -40,6 +40,7 @@ async def toss(ctx):
     try:
         chance=['heads','tails']
         found = random.choice(chance)
+        print("yes",ctx.guild.id)
         await ctx.reply(f"It's {found}")
     except Exception as e:
         print("Exception: ", e)
@@ -49,7 +50,8 @@ async def toss(ctx):
 @bot.command(name = 'chat')
 async def chat(ctx,*,message):
     url = 'https://loligod-bot.onrender.com/geminichat'
-    data = {'prompt': message}
+    # url = 'http://localhost:8000/geminichat'
+    data = {'server_id':ctx.guild.id , 'prompt': message}
 
     # Send the POST request
     response = requests.post(url, json=data)
@@ -59,6 +61,6 @@ async def chat(ctx,*,message):
         # print("Response from API:", response.json())
         await ctx.reply(response.json())
     else:
-        print("Failed to get a valid response. Status code:", response.status_code)
+        await ctx.reply("sorry i cannot respond to that")
     
 bot.run(TOKEN)

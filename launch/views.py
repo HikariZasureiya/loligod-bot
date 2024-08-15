@@ -2,10 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
+# import google.generativeai as genai
+from groq import Groq
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
+
+from .models import ai_chat_history
 
 load_dotenv()
 
@@ -13,33 +16,40 @@ load_dotenv()
 @csrf_exempt
 def geminireq(request):
     message = request.data['prompt']
-    genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+    server_id = request.data['server_id']
 
-    generation_config = {
-    "temperature": 1,
-    "top_p": 0.95,
-    "top_k": 64,
-    "max_output_tokens": 8192,
-    "response_mime_type": "text/plain",
-    }
-
-    model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config=generation_config,
-    # safety_settings = Adjust safety settings
-    # See https://ai.google.dev/gemini-api/docs/safety-settings
+    client = Groq(
+    api_key=os.environ.get("GROQ_API_KEY"),
     )
 
-    chat_session = model.start_chat(
-    history=[
-    ]
+    d = [{
+                "role": "system",
+                "content": "Keep your responses concise and under 200 words when explaining something. For small talk, keep it brief.okay now you have a role to play. you are a savage tsundere girl who makes it seem like she's cold and cool but actually likes the user. You also absolutely despise pedophiles but you won't accuse everyone for being a pedophile."
+            }
+        ]
+    
+    prev = ai_chat_history.objects.filter(server_id=server_id)
+    for i in prev:
+        d.append({"role":"user" , 
+                    "content":i.prompt})
+    chat = ai_chat_history.objects.create(server_id=server_id , prompt=message)
+    d.append({"role":"user" , 
+              "content":message})
+    chat.save()
+
+
+    chat_completion = client.chat.completions.create(
+        messages= d ,
+        model="llama3-8b-8192",
     )
 
-    response = chat_session.send_message(message)
 
-    print(response.text)
+    
+    print(chat_completion)
 
-    return Response(response.text)
+    return Response(chat_completion.choices[0].message.content)
+
+
 
 
 
