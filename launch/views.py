@@ -12,6 +12,12 @@ from .models import ai_chat_history
 
 load_dotenv()
 
+@api_view(['GET'])
+def deletem(request):
+    server_id = request.GET.get('server_id')
+    ai_chat_history.objects.filter(server_id=server_id).delete()
+
+
 @api_view(['POST'])
 @csrf_exempt
 def geminireq(request):

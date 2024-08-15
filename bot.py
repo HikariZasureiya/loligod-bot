@@ -50,17 +50,21 @@ async def toss(ctx):
 @bot.command(name = 'chat')
 async def chat(ctx,*,message):
     url = 'https://loligod-bot.onrender.com/geminichat'
+
     # url = 'http://localhost:8000/geminichat'
     data = {'server_id':ctx.guild.id , 'prompt': message}
 
     # Send the POST request
     response = requests.post(url, json=data)
 
+    print(response)
+
     # Check the response
-    if response.status_code == 200:
+    if response.json() and response.status_code == 200:
         # print("Response from API:", response.json())
         await ctx.reply(response.json())
     else:
+        requests.get('https://loligod-bot.onrender.com/deletechat',params={"server_id": ctx.guild.id})
         await ctx.reply("sorry i cannot respond to that")
     
 bot.run(TOKEN)
