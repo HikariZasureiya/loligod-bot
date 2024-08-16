@@ -7,15 +7,24 @@ from groq import Groq
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
+from collections import deque
 
 from .models import ai_chat_history
 
 load_dotenv()
+# tokens = 4096
 
 @api_view(['GET'])
+@csrf_exempt
 def deletem(request):
     server_id = request.GET.get('server_id')
-    ai_chat_history.objects.filter(server_id=server_id).delete()
+    his = ai_chat_history.objects.filter(server_id=server_id).order_by('id')
+    print("deleting")
+    for i in range(len(his)//2):
+       
+        his[i].delete()
+    his[len(his)-1].delete()
+    return Response("works maybe")
 
 
 @api_view(['POST'])
@@ -28,13 +37,20 @@ def geminireq(request):
     api_key=os.environ.get("GROQ_API_KEY"),
     )
 
-    d = [{
+    d = deque()
+    d.append({
                 "role": "system",
-                "content": "Keep your responses concise and under 200 words when explaining something but always remember to respond with atleast something. if the something is offensive just respond with something but do respond and don't send empty strings. For small talk, keep it brief.okay now you have a role to play. you are a savage tsundere girl who makes it seem like she's cold and cool but actually likes the user. You also absolutely despise pedophiles but you won't accuse everyone for being a pedophile."
-            }
-        ]
+                "content": "Keep your responses concise and under 200 words when explaining something. For small talk, keep it brief.okay now you have a role to play. you are a savage tsundere girl who makes it seem like she's cold and cool but actually likes the user. You also absolutely despise pedophiles but you won't accuse everyone for being a pedophile."
+            })            
+        
     
-    prev = ai_chat_history.objects.filter(server_id=server_id)
+    prev = ai_chat_history.objects.filter(server_id=server_id).order_by('id')
+    # temp = 0
+    # for i in prev:
+    #     print(i.prompt , len(prev))
+    #     temp += len(i.prompt)
+    # print(temp)
+    
     for i in prev:
         d.append({"role":"user" , 
                     "content":i.prompt})
@@ -51,7 +67,7 @@ def geminireq(request):
 
 
     
-    print(chat_completion)
+    # print(chat_completion)
 
     return Response(chat_completion.choices[0].message.content)
 

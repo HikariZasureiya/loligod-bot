@@ -65,6 +65,12 @@ async def chat(ctx,*,message):
         await ctx.reply(response.json())
     else:
         requests.get('https://loligod-bot.onrender.com/deletechat',params={"server_id": ctx.guild.id})
-        await ctx.reply("sorry i cannot respond to that")
-    
+        # print("deleting")
+        # requests.get('http://localhost:8000/deletechat',params={"server_id": ctx.guild.id})
+        response = requests.post(url, json=data)
+        if response.json():
+           
+            await ctx.reply(response.json())
+        else:
+            await ctx.reply("i ain't replying to that try harder")
 bot.run(TOKEN)
