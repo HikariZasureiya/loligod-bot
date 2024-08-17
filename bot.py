@@ -77,7 +77,7 @@ async def chat(ctx,*,message):
         else:
             await ctx.reply("i ain't replying to that try harder")
 
-@bot.slash_command(name = "confess")
+@bot.slash_command(name = "confess", description = "make anonymous confessions. Don't worry no one's gonna know >.<")
 @commands.has_permissions()
 async def confess(ctx,title ,confession):
     # url = "http://localhost:8000/confess"
