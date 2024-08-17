@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from collections import deque
 
-from .models import ai_chat_history
+from .models import ai_chat_history, confession_model
 
 load_dotenv()
 # tokens = 4096
@@ -25,6 +25,29 @@ def deletem(request):
         his[i].delete()
     his[len(his)-1].delete()
     return Response("works maybe")
+
+
+@api_view(['POST'])
+@csrf_exempt
+def confession(request):
+    server_id = request.data['server_id']
+    title = request.data['title']
+    message = request.data['message']
+
+    try:
+        last = confession_model.objects.filter(server_id=server_id).latest('id')
+        print("here")
+        count = last.count+1
+        print(count)
+        con_obj = confession_model.objects.create(server_id=server_id , title = title , message = message , count = count )
+        con_obj.save()
+        return Response(count)
+    except:
+        print("no here")
+        con_obj = confession_model.objects.create(server_id=server_id , title = title , message = message , count = 1)
+        con_obj.save()
+        return Response(1)
+
 
 
 @api_view(['POST'])

@@ -24,4 +24,5 @@ urlpatterns = [
     path("", views.home),
     path('geminichat', views.geminireq),
     path('deletechat',views.deletem),
+    path('confess',views.confession),
 ]
