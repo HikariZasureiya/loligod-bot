@@ -42,7 +42,6 @@ async def toss(ctx):
     try:
         chance=['heads','tails']
         found = random.choice(chance)
-        print("yes",ctx.guild.id)
         await ctx.reply(f"It's {found}")
     except Exception as e:
         print("Exception: ", e)
@@ -89,6 +88,14 @@ async def confess(ctx,title ,confession):
     await ctx.send(decorated_confession)
     await ctx.response.send_message("confession sent", ephemeral=True)
 
-
+@bot.slash_command(name="lolijoin", description="Makes the bot join your voice channel.")
+@commands.has_permissions()
+async def lolijoin(ctx):
+    if ctx.author.voice:
+        voice_channel = ctx.author.voice.channel
+        await voice_channel.connect()
+        await ctx.respond(f"Joined {voice_channel.name}!")
+    else:
+        await ctx.respond("You are not in a voice channel.")
 
 bot.run(TOKEN)
