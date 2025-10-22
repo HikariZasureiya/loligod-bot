@@ -76,17 +76,17 @@ async def chat(ctx,*,message):
         else:
             await ctx.reply("i ain't replying to that try harder")
 
-@bot.slash_command(name = "confess", description = "make anonymous confessions. Don't worry no one's gonna know >.<")
-@commands.has_permissions()
-async def confess(ctx,title ,confession):
-    # url = "http://localhost:8000/confess"
-    url = "https://loligod-bot.onrender.com/confess"
-    data = {"server_id": ctx.guild.id , "title": title , "message":confession}
-    response = requests.post(url , data)
-    print(response.json())
-    decorated_confession = f'# __Anonymous Confession No.{response.json()}__ \n## {title}\n{confession}'
-    await ctx.send(decorated_confession)
-    await ctx.response.send_message("confession sent", ephemeral=True)
+# @bot.slash_command(name = "confess", description = "make anonymous confessions. Don't worry no one's gonna know >.<")
+# @commands.has_permissions()
+# async def confess(ctx,title ,confession):
+#     # url = "http://localhost:8000/confess"
+#     url = "https://loligod-bot.onrender.com/confess"
+#     data = {"server_id": ctx.guild.id , "title": title , "message":confession}
+#     response = requests.post(url , data)
+#     print(response.json())
+#     decorated_confession = f'# __Anonymous Confession No.{response.json()}__ \n## {title}\n{confession}'
+#     await ctx.send(decorated_confession)
+#     await ctx.response.send_message("confession sent", ephemeral=True)
 
 @bot.slash_command(name="lolijoin", description="Makes the bot join your voice channel.")
 @commands.has_permissions()
